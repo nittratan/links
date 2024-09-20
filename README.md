@@ -1,4 +1,5 @@
 # links
+https://tanaypratap.notion.site/bytr-brochure-6eca974ac9b5413fb5bbcbbd21195242
 [My Drive Link](https://drive.google.com/drive/folders/1MWg0PLcXU5NQ7u4gFQ09MPXt3xrc2HmK?usp=sharing)
 
 [Roadmap](https://roadmap.sh/)
