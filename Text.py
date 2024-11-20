@@ -45,33 +45,3 @@ save_text_to_file(text_data, "extracted_text.txt")
 
 
 """
-Handles the upload of data files for procest
-
-This endpoint allows users to upload data files, typically containing claim adjustment details. 
-The uploaded file is validated for format and content compliance before being processed. 
-If the upload is successful, the data is either queued for further processing or 
-immediately integrated into the system.
-
-### Features:
-- Accepts file uploads in specified formats (e.g., CSV, Excel).
-- Validates the structure and content of the file.
-- Logs upload details for auditing purposes.
-- Returns appropriate error messages for invalid or failed uploads.
-
-### Request:
-- **Method**: POST
-- **Headers**: `Content-Type: multipart/form-data`
-- **Body**: 
-    - `file` (required): The data file to upload.
-    - Additional optional metadata if required.
-
-### Response:
-- **200 OK**: File successfully uploaded and queued/processed.
-- **400 Bad Request**: Invalid file format or missing required fields.
-- **500 Internal Server Error**: An unexpected error occurred.
-
-### Example Usage:
-```curl
-curl -X POST "https://api.example.com/uploadData" \
--H "Authorization: Bearer <token>" \
--F "file=@adjustment_data.csv"
