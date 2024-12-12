@@ -1,39 +1,51 @@
 import logging
+from fastapi import APIRouter, File, UploadFile, HTTPException
 from pathlib import Path
-from pdf2image import convert_from_path
+from utils.file_utils.py import extract_images
 
-# Configure logging for utils
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("app.log"), logging.StreamHandler()],
-)
+router = APIRouter()
 
-def extract_images(pdf_path: Path, output_dir: Path) -> list:
+# Directory to store the converted images
+IMAGE_OUTPUT_DIR = Path("output_images")
+
+@router.get("/index")
+async def index():
     """
-    Extracts images from a PDF file and saves them to the specified output directory.
+    API health check route.
+    """
+    logging.info("Health check endpoint hit.")
+    return {"message": "API is alive and running!"}
 
-    :param pdf_path: Path to the PDF file
-    :param output_dir: Directory where images will be saved
-    :return: List of paths to the saved images
+@router.post("/convert-pdf-to-images/")
+async def convert_pdf_to_images(file: UploadFile = File(...)):
+    """
+    Upload a PDF file and convert its pages to images.
     """
     try:
-        # Ensure the output directory exists
-        output_dir.mkdir(parents=True, exist_ok=True)
+        # Validate file type
+        if not file.filename.endswith(".pdf"):
+            logging.warning("Uploaded file is not a PDF.")
+            raise HTTPException(status_code=400, detail="Invalid file type. Please upload a PDF file.")
 
-        # Convert PDF to images
-        images = convert_from_path(pdf_path, fmt="jpeg")
-        logging.info(f"Extracting {len(images)} images from {pdf_path}")
+        # Save the uploaded PDF to the server
+        pdf_path = Path(file.filename)
+        with pdf_path.open("wb") as f:
+            f.write(await file.read())
+        logging.info(f"Uploaded file saved as: {pdf_path}")
 
-        image_files = []
-        for i, image in enumerate(images):
-            output_file = output_dir / f"{pdf_path.stem}_page_{i + 1}.jpeg"
-            image.save(output_file, "JPEG")
-            image_files.append(str(output_file))
-            logging.info(f"Image saved: {output_file}")
+        # Extract images from the PDF
+        image_files = extract_images(pdf_path, IMAGE_OUTPUT_DIR)
 
-        return image_files
+        # Cleanup uploaded PDF
+        pdf_path.unlink()
+        logging.info(f"Uploaded PDF deleted: {pdf_path}")
+
+        return {"message": "PDF converted successfully!", "images": image_files}
+
+    except HTTPException as e:
+        logging.error(f"HTTPException: {e.detail}")
+        raise e
 
     except Exception as e:
-        logging.exception(f"Error while extracting images from PDF: {e}")
-        raise
+        logging.exception("An error occurred while processing the PDF.")
+        raise HTTPException(status_code=500, detail="An internal server error occurred.")
