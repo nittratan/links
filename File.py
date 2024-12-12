@@ -1,51 +1,20 @@
 import logging
-from fastapi import APIRouter, File, UploadFile, HTTPException
-from pathlib import Path
-from utils.file_utils.py import extract_images
+from fastapi import FastAPI
+from routes.pdf_routes import router
 
-router = APIRouter()
+# Initialize FastAPI app
+app = FastAPI()
 
-# Directory to store the converted images
-IMAGE_OUTPUT_DIR = Path("output_images")
+# Include router from routes
+app.include_router(router)
 
-@router.get("/index")
-async def index():
-    """
-    API health check route.
-    """
-    logging.info("Health check endpoint hit.")
-    return {"message": "API is alive and running!"}
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("app.log"), logging.StreamHandler()],
+)
 
-@router.post("/convert-pdf-to-images/")
-async def convert_pdf_to_images(file: UploadFile = File(...)):
-    """
-    Upload a PDF file and convert its pages to images.
-    """
-    try:
-        # Validate file type
-        if not file.filename.endswith(".pdf"):
-            logging.warning("Uploaded file is not a PDF.")
-            raise HTTPException(status_code=400, detail="Invalid file type. Please upload a PDF file.")
-
-        # Save the uploaded PDF to the server
-        pdf_path = Path(file.filename)
-        with pdf_path.open("wb") as f:
-            f.write(await file.read())
-        logging.info(f"Uploaded file saved as: {pdf_path}")
-
-        # Extract images from the PDF
-        image_files = extract_images(pdf_path, IMAGE_OUTPUT_DIR)
-
-        # Cleanup uploaded PDF
-        pdf_path.unlink()
-        logging.info(f"Uploaded PDF deleted: {pdf_path}")
-
-        return {"message": "PDF converted successfully!", "images": image_files}
-
-    except HTTPException as e:
-        logging.error(f"HTTPException: {e.detail}")
-        raise e
-
-    except Exception as e:
-        logging.exception("An error occurred while processing the PDF.")
-        raise HTTPException(status_code=500, detail="An internal server error occurred.")
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)
