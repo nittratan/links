@@ -1,20 +1,35 @@
-import logging
-from fastapi import FastAPI
-from routes.pdf_routes import router
+import torch
+from PIL import Image
+import cv2
+import docowl
 
-# Initialize FastAPI app
-app = FastAPI()
+# Load the pre-trained DocOwl model
+model = docowl.DocOwlModel.from_pretrained('microsoft/docowl-base')
 
-# Include router from routes
-app.include_router(router)
+# Function to preprocess the image
+def preprocess_image(image_path):
+    image = cv2.imread(image_path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
+    pil_image = Image.fromarray(image)
+    return pil_image
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("app.log"), logging.StreamHandler()],
-)
+# Function to extract text from image
+def extract_text_from_image(image_path):
+    image = preprocess_image(image_path)
+    
+    # Perform OCR and extraction using DocOwl
+    inputs = model.preprocess(image)
+    with torch.no_grad():
+        outputs = model(**inputs)
+    
+    # Extract detected text
+    extracted_text = model.postprocess(outputs)
+    
+    return extracted_text
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+# Example usage
+image_path = "sample_image.jpg"  # Replace with your image path
+extracted_text = extract_text_from_image(image_path)
+
+# Print the extracted text
+print("Extracted Text:", extracted_text)
