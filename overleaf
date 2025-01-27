@@ -1,0 +1,11 @@
+\documentclass{article}
+\usepackage{hyperref}
+
+\begin{document}
+
+\noindent
+\textbf{+91-7697303862} \hfill 
+\href{mailto:ritikmeena.gwl.2000@gmail.com}{ritikmeena.gwl.2000@gmail.com} \hfill 
+\href{https://linkedin.com/in/ritik-meena}{linkedin.com/in/ritik-meena}
+
+\end{document}
