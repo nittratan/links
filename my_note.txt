@@ -1,0 +1,14 @@
+VS Code – Required for coding, debugging, and integrating extensions for improved development efficiency.
+
+Anaconda – Required for managing Python environments and packages, essential for data science and automation.
+
+Git – Required for version control, enabling seamless collaboration and code tracking.
+
+Postman – Required for API testing, debugging, and automation to ensure smooth API integrations.
+
+DBeaver – Required for database management, querying, and troubleshooting to enhance data operations.
+
+Python – Required for backend development, automation, and data processing tasks.
+
+
+These tools are essential for improving workflow efficiency, ensuring smooth development processes, and aligning with business and operational requirements.
