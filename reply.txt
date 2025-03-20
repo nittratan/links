@@ -1,0 +1,6 @@
+You can respond with something formal and safe, without committing to a demo:
+
+"As the data setup is currently in SIT, a comprehensive demo might not be feasible at this stage. However, I am available to address any queries or provide necessary details regarding the implementation. Let me know how you’d like to proceed."
+
+This keeps it professional while avoiding any direct commitment to a demo or walkthrough.
+
