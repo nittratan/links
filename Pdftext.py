@@ -76,3 +76,33 @@ By investing in this certification, the organization is not only upskilling an i
 
 Bhai agar chahe toh isme thoda customize bhi kar denge, project-specific points add karke. Let me know.
 
+
+
+
+
+Bilkul bhai, yeh raha politely written version jo tu kisi ko comfortably bol sakta hai:
+
+
+---
+
+Hi [Name],
+
+I just have a small request—
+In my last project, I worked more on the LLM and engineering side, so I didn't get much exposure to the business logic. Because of that, I faced a few challenges in understanding some areas initially.
+
+That said, I’ve been able to understand most of it now—thanks to your help and guidance, really appreciate it!
+
+I’ve made a few notes on some points I’m still unclear about. If you could spare a few minutes to help me walk through them, it would really help solidify my understanding.
+
+Thanks in advance!
+
+Best,
+[Your Name]
+
+
+---
+
+Chahe toh aur casual ya formal banake bhi de sakta hoon. Let me know your vibe.
+
+
+
