@@ -4,3 +4,16 @@ You can respond with something formal and safe, without committing to a demo:
 
 This keeps it professional while avoiding any direct commitment to a demo or walkthrough.
 
+
+
+
+
+
+Hey team, I won’t be able to join today’s scrum.
+Here’s my update:
+
+Story 1: Development in progress
+
+Story 2: Ready for QA, informed Lavanya and team to start testing.
+
+
