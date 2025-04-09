@@ -17,3 +17,12 @@ Story 1: Development in progress
 Story 2: Ready for QA, informed Lavanya and team to start testing.
 
 
+Hey team, I was away for lunch and couldn’t attend/receive the call. Let me know if there’s anything I missed.
+
+Apologies, I was away for lunch and couldn’t attend the call. Please let me know if there are any important updates I should be aware of.
+
+Hi [Name],
+Apologies, I was away for lunch and couldn’t attend the call. Please let me know if there’s anything important I missed or need to catch up on.
+
+Hey [Name],
+Sorry, I was away for lunch and missed the call. Let me know if there’s anything I need to be updated on.
