@@ -1,0 +1,92 @@
+Sure bhai, here's the PoC description and workflow in English for your LLM-powered Test Case Generator:
+
+
+---
+
+PoC Title:
+
+LLM-powered Automated Unit Test Generator
+
+
+---
+
+Objective:
+
+To build a Proof of Concept (PoC) system that uses a Large Language Model (LLM) to automatically generate unit test cases (preferably in Pytest) from given Python functions, methods, or classes. This can assist developers and QA engineers in improving code quality, ensuring coverage, and speeding up testing processes.
+
+
+---
+
+Key Features:
+
+Accepts code input (Python functions/classes).
+
+Generates unit test cases using GPT or any other LLM.
+
+Supports Pytest or Unittest format.
+
+Displays the generated tests to the user.
+
+Optional: Allows user to run or download the tests.
+
+
+
+---
+
+Tech Stack:
+
+Backend: FastAPI (to handle API requests)
+
+LLM: OpenAI GPT-4 / GPT-4 Turbo (via API) or local model like LLaMA3
+
+Testing Framework: Pytest (for generated tests)
+
+Frontend (Optional): Streamlit / React (to interact with UI)
+
+Database (Optional): SQLite/PostgreSQL for storing code-test history
+
+
+
+---
+
+Workflow:
+
+Step 1: Code Input
+
+User provides a Python function, class, or API logic.
+
+This can be submitted via API (or UI if frontend is added).
+
+
+Step 2: Prompting the LLM
+
+Backend sends the user input to the LLM with a well-structured prompt like:
+
+> "You are a QA engineer. Write 3 Pytest-based unit tests for the following Python function."
+
+
+
+
+Step 3: LLM Response
+
+The LLM returns unit test code with proper test function names, inputs, expected outputs, and exception cases.
+
+
+Step 4: Output Display
+
+The generated test cases are shown to the user.
+
+Optionally, user can:
+
+Edit the test
+
+Download the test as .py file
+
+Run the test on the server (sandboxed)
+
+Ask for an explanation of each test
+
+
+
+**Step 5 (Optional):
+
