@@ -45,3 +45,10 @@ save_text_to_file(text_data, "extracted_text.txt")
 
 
 """
+
+---
+
+Problem Statement (Short):
+
+Writing unit tests manually is time-consuming and often skipped, leading to poor test coverage and quality. Many developers, especially juniors or QA teams, struggle with writing effective tests. With the rise of LLMs, we can automate test generation directly from code, saving time and improving consistency. This PoC aims to use an LLM to auto-generate unit tests for Python functions, making testing faster and more reliable.
+
