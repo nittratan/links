@@ -1,11 +1,9 @@
-Worked on the design, development, and enhancement of scalable backend solutions within the AI Tower, focused on Payment Integrity and Clinical Automation use cases.
+Successfully contributed to project goals by following standard protocols, ensuring timely delivery and quality.
 
-Handled automation tasks across service pipelines, including claim validation, risk detection, and intelligent summarization using Python, FastAPI, and PostgreSQL.
+Improved team efficiency through automation scripts, reusable tools, and workflow optimizations.
 
-Contributed to multiple Proof of Concepts (POCs) involving GPT-4, BERT, and custom LLM integrations for intelligent healthcare data processing.
+Actively shared domain and technical knowledge via KT sessions, promoting collaborative growth.
 
-Collaborated with cross-functional teams to resolve critical bugs, optimize modules, and ensure compliance with architectural and coding standards.
+Participated in cultural and leadership initiatives, fostering a positive and inclusive work environment.
 
-Maintained documentation for newly developed modules, APIs, and ML workflows to ensure maintainability and smooth knowledge transfer.
-
-Supported configuration management, test validations, and log-based debugging to improve reliability and system performance.
+Helped reduce operational gaps by refining Knowledge Management practices and supporting team performance.
