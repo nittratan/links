@@ -1,1 +1,15 @@
+Automation – Performance Goal (This Year)
 
+Contributed to automation by identifying repetitive manual tasks and converting them into reusable scripts and workflows.
+
+Designed and implemented automation solutions that improved system efficiency and reduced manual effort.
+
+Worked closely with QA/Dev teams to build performance validation checks within CI/CD pipelines.
+
+Enhanced test coverage by automating performance testing and error detection in staging and production environments.
+
+Actively monitored logs, traced critical failures, and implemented auto-alerts for quick debugging and resolution.
+
+Participated in regular code reviews and ensured best practices in automation scripting and version control.
+
+Focused on delivering scalable, maintainable, and performance-optimized automation solutions.
