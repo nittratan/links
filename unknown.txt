@@ -1,11 +1,11 @@
-KM Specific – Knowledge Management Contribution
+Worked on the design, development, and enhancement of scalable backend solutions within the AI Tower, focused on Payment Integrity and Clinical Automation use cases.
 
-Actively contributed to Knowledge Management by assisting team members with access to essential tools and project-specific utilities.
+Handled automation tasks across service pipelines, including claim validation, risk detection, and intelligent summarization using Python, FastAPI, and PostgreSQL.
 
-Conducted Knowledge Transfer (KT) sessions and informal walkthroughs to ensure smooth onboarding and understanding of the BeCA Claims project.
+Contributed to multiple Proof of Concepts (POCs) involving GPT-4, BERT, and custom LLM integrations for intelligent healthcare data processing.
 
-Promoted a culture of collaboration by consistently sharing insights, best practices, and reusable resources.
+Collaborated with cross-functional teams to resolve critical bugs, optimize modules, and ensure compliance with architectural and coding standards.
 
-Played a key role in reducing performance variability by refining and reusing KM practices within the team.
+Maintained documentation for newly developed modules, APIs, and ML workflows to ensure maintainability and smooth knowledge transfer.
 
-Ensured availability of updated documentation and references to support ongoing and future project needs.
+Supported configuration management, test validations, and log-based debugging to improve reliability and system performance.
