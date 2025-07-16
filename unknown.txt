@@ -1,9 +1,1 @@
-Successfully contributed to project goals by following standard protocols, ensuring timely delivery and quality.
-
-Improved team efficiency through automation scripts, reusable tools, and workflow optimizations.
-
-Actively shared domain and technical knowledge via KT sessions, promoting collaborative growth.
-
-Participated in cultural and leadership initiatives, fostering a positive and inclusive work environment.
-
-Helped reduce operational gaps by refining Knowledge Management practices and supporting team performance.
+hello world 
