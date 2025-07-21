@@ -41,3 +41,6 @@ Thank you for your understanding.
 
 Best regards,
 [Your Name]
+
+
+As of now, our team hasn’t received the finalized details regarding the specific PostgreSQL tables or schema for the table audit-type files. Once we get the confirmation on the structure, especially for fields like fileStatus, we’ll be able to share the exact references for the landing page implementation.
