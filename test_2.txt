@@ -1,0 +1,116 @@
+Thik hai bhai, mai tumhare Appeals ACK – GB/CB both ke liye process same professional style me likh deta hoon, jisme tum baad me screenshot laga sakte ho.
+
+
+---
+
+Unit Test Document – Appeals ACK Sending (GB & CB)
+
+Objective
+
+To validate that the Appeals ACK is sent for both GB and CB cases, and to verify that the logs correctly capture the sending process.
+
+
+---
+
+Test Scope
+
+System Under Test (SUT): Appeals ACK sending process
+
+Trigger Type: Manual/Automated as per Appeals workflow
+
+Log Monitoring: Application logs
+
+Scope Includes: GB and CB flows
+
+
+
+---
+
+Test Steps
+
+1. Initiate Appeals Flow
+
+Trigger the appeals ACK process (as per functional flow: either via UI action, batch job, or API call).
+
+
+
+2. Check Logs for GB Flow
+
+Search application logs for GB appeal ACK entries.
+
+Confirm that an ACK send log entry exists for GB.
+
+
+
+3. Check Logs for CB Flow
+
+Search application logs for CB appeal ACK entries.
+
+Confirm that an ACK send log entry exists for CB.
+
+
+
+4. Confirm ACK Sent for Both
+
+Verify that ACK send confirmations exist for both GB and CB for the same test case / correlation ID.
+
+
+
+
+
+---
+
+Expected Results
+
+Case	GB ACK Sent?	CB ACK Sent?	Expected Outcome
+
+Positive	Yes	Yes	ACK successfully sent for both GB & CB
+Negative	No	No	No ACK sent (system behaves as per fail scenario)
+
+
+
+---
+
+Pass/Fail Criteria
+
+Pass: Logs confirm ACK sent for both GB and CB.
+
+Fail: ACK sent for only one flow or not sent for both.
+
+
+
+---
+
+Test Evidence
+
+Positive Case:
+
+Screenshot of log showing GB ACK sent.
+
+Screenshot of log showing CB ACK sent.
+
+
+Negative Case:
+
+Screenshot showing ACK not sent for both flows.
+
+
+
+
+---
+
+Remarks
+
+Ensure test execution is done in an environment where both GB and CB data is available.
+
+Use correlation IDs for matching GB and CB ACK events.
+
+Attach all relevant log screenshots as evidence.
+
+
+
+---
+
+Bhai agar tum chaho to mai GB/CB dono ke liye side-by-side log verification ka format bana ke de sakta hoon taaki tumhare docs me ek hi table me proof aa jaye.
+Woh tumhare screenshot ke saath kaafi professional lagega.
+
