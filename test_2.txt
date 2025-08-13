@@ -1,26 +1,26 @@
-Thik hai bhai, mai tumhare Appeals ACK – GB/CB both ke liye process same professional style me likh deta hoon, jisme tum baad me screenshot laga sakte ho.
+Thik hai bhai, main tumhare liye clear aur professional style unit test documentation bana deta hoon jo tum apne work log ya Confluence/Jira me dal sakte ho.
 
 
 ---
 
-Unit Test Document – Appeals ACK Sending (GB & CB)
+Unit Test Document – UPD ACK Sending to EXL
 
 Objective
 
-To validate that the Appeals ACK is sent for both GB and CB cases, and to verify that the logs correctly capture the sending process.
+To validate that when the UPD ACK is successfully sent to EXL, the ed-api is immediately triggered in a subprocess, and when the UPD ACK is not sent, the ed-api trigger does not occur.
 
 
 ---
 
 Test Scope
 
-System Under Test (SUT): Appeals ACK sending process
+System Under Test (SUT): API Endpoint https://t.gcpdns.internal.das/taggin
 
-Trigger Type: Manual/Automated as per Appeals workflow
+Trigger Type: Manual/Automated via API call
+
+Dependent Service: ed-api
 
 Log Monitoring: Application logs
-
-Scope Includes: GB and CB flows
 
 
 
@@ -28,31 +28,41 @@ Scope Includes: GB and CB flows
 
 Test Steps
 
-1. Initiate Appeals Flow
+1. Trigger the API
 
-Trigger the appeals ACK process (as per functional flow: either via UI action, batch job, or API call).
+Send a request to:
 
+POST https://t.gcpdns.internal.das/taggin
 
-
-2. Check Logs for GB Flow
-
-Search application logs for GB appeal ACK entries.
-
-Confirm that an ACK send log entry exists for GB.
+Provide necessary payload & headers as per API specification.
 
 
 
-3. Check Logs for CB Flow
+2. Check UPD ACK Sending
 
-Search application logs for CB appeal ACK entries.
+Open application logs in the respective logging tool (e.g., Kibana/Stackdriver).
 
-Confirm that an ACK send log entry exists for CB.
+Search for log entry confirming UPD ACK sent to EXL.
 
 
 
-4. Confirm ACK Sent for Both
+3. Verify ed-api Trigger (Positive Case)
 
-Verify that ACK send confirmations exist for both GB and CB for the same test case / correlation ID.
+If UPD ACK sent is confirmed:
+
+Check logs for immediate subprocess call to ed-api.
+
+Match the correlation ID / request ID with the initial trigger.
+
+
+
+
+4. Verify No ed-api Trigger (Negative Case)
+
+If UPD ACK is not sent:
+
+Ensure no subprocess trigger for ed-api exists for the same correlation ID.
+
 
 
 
@@ -62,10 +72,10 @@ Verify that ACK send confirmations exist for both GB and CB for the same test ca
 
 Expected Results
 
-Case	GB ACK Sent?	CB ACK Sent?	Expected Outcome
+Case	UPD ACK Sent?	ed-api Trigger?	Expected Outcome
 
-Positive	Yes	Yes	ACK successfully sent for both GB & CB
-Negative	No	No	No ACK sent (system behaves as per fail scenario)
+Positive	Yes	Yes	ed-api triggered immediately
+Negative	No	No	No ed-api trigger
 
 
 
@@ -73,9 +83,9 @@ Negative	No	No	No ACK sent (system behaves as per fail scenario)
 
 Pass/Fail Criteria
 
-Pass: Logs confirm ACK sent for both GB and CB.
+Pass: Behavior matches the expected results in both positive and negative cases.
 
-Fail: ACK sent for only one flow or not sent for both.
+Fail: ed-api triggers without UPD ACK sent OR UPD ACK sent but no ed-api trigger occurs.
 
 
 
@@ -85,14 +95,16 @@ Test Evidence
 
 Positive Case:
 
-Screenshot of log showing GB ACK sent.
+Screenshot of log showing UPD ACK sent.
 
-Screenshot of log showing CB ACK sent.
+Screenshot of log showing immediate ed-api subprocess trigger.
 
 
 Negative Case:
 
-Screenshot showing ACK not sent for both flows.
+Screenshot showing UPD ACK not sent.
+
+Screenshot showing absence of any ed-api subprocess trigger.
 
 
 
@@ -101,16 +113,16 @@ Screenshot showing ACK not sent for both flows.
 
 Remarks
 
-Ensure test execution is done in an environment where both GB and CB data is available.
+Ensure both test cases are executed on the same environment.
 
-Use correlation IDs for matching GB and CB ACK events.
+Maintain correlation ID mapping for traceability.
 
-Attach all relevant log screenshots as evidence.
+Attach log screenshots as evidence.
 
 
 
 ---
 
-Bhai agar tum chaho to mai GB/CB dono ke liye side-by-side log verification ka format bana ke de sakta hoon taaki tumhare docs me ek hi table me proof aa jaye.
-Woh tumhare screenshot ke saath kaafi professional lagega.
+Bhai agar tum bolo to main iska ready-made Jira ticket format me bhi likh ke de sakta hoon taaki tum sidha copy-paste kar sako.
+Isme test case IDs aur evidence placeholders bhi dal dunga.
 
