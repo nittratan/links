@@ -3,67 +3,151 @@ import json
 from transformers import pipeline
 from tqdm import tqdm
 
-# === Step 1: Load CSV ===
-file_path = "results.csv"  # change to your file name
+# ===================== CONFIG =====================
+file_path   = "results.csv"   # same file for input/output
+source_col  = "context"       # input column
+model_name  = "meta-llama/Meta-Llama-3-8B-Instruct"
+chunk_chars = 1800            # size of each chunk (characters)
+overlap     = 200             # overlap between chunks to avoid cutting sentences
+max_new_tok = 700             # generation cap per chunk
+# ==================================================
+
+# ---- Load CSV ----
 df = pd.read_csv(file_path)
 
-# === Step 2: Load Phi-2 ===
+# ---- Load model pipeline ----
+# (No explicit device passed to pipeline; device_map handled internally)
 generator = pipeline(
     "text-generation",
-    model="microsoft/phi-2",
+    model=model_name,
     torch_dtype="auto",
     device_map="auto",
     do_sample=False
 )
 
-# === Step 3: Function to extract info ===
-def extract_info(text):
-    example_json = '''{
-"Visit Reason": ["Routine checkup"],
-"Diagnosis": ["Impressions: Acute on chronic pharyngeal dysphagia..."],
-"Past Medical History": ["Patient endorsing preferring softer solids..."],
-"Clinical Details": ["Oral Phase: No gross oral phase deficits", "Pharyngeal Phase: No gross pharyngeal phase deficits", "Swallowing: <Level 4> Mild-moderate dysphagia..."],
-"Vital Signs": [],
-"Exam Results": ["Oral-Peripheral Examination General: Non-focal/unremarkable", "Lips: Unremarkable/WNL", "Tongue: Unremarkable/WNL", "Larynx: Unremarkable/WNL", "Oral status: Scattered/missing teeth"],
-"Lab Results": [],
-"Imaging Test Results": [],
-"Hospital and ED course": ["OK to continue w/ oral diet pending instrumental given pt aware of difficulties..."],
-"Discharge Plan": [],
-"Full HPI": [],
-"Full Assessment and Plan": ["Recommending regular diet/thin liquids..."]
-}'''
+# ---- JSON skeleton & helpers ----
+SKELETON_KEYS = [
+    "Visit Reason",
+    "Diagnosis",
+    "Past Medical History",
+    "Clinical Details",
+    "Vital Signs",
+    "Exam Results",
+    "Lab Results",
+    "Imaging Test Results",
+    "Hospital and ED course",
+    "Discharge Plan",
+    "Full HPI",
+    "Full Assessment and Plan"
+]
 
-    prompt = f"""
-You are an assistant that extracts structured medical information in JSON format.
-Follow this example output strictly:
+def empty_skeleton():
+    return {k: [] for k in SKELETON_KEYS}
 
-Example:
-{example_json}
-
-Now extract from the following text. Only return valid JSON, no extra words.
-
-Text:
-{text}
-JSON:
-"""
-
-    output = generator(prompt, max_new_tokens=700)[0]['generated_text']
-
-    try:
-        json_start = output.find("{")
-        json_end = output.rfind("}") + 1
-        if json_start != -1 and json_end != -1:
-            parsed = json.loads(output[json_start:json_end])
-            return json.dumps(parsed, ensure_ascii=False)
+def ensure_schema(js):
+    """Ensure all required keys exist and values are lists of strings."""
+    if not isinstance(js, dict):
+        return empty_skeleton()
+    fixed = empty_skeleton()
+    for k in SKELETON_KEYS:
+        v = js.get(k, [])
+        if isinstance(v, list):
+            # coerce non-strings to strings safely
+            fixed[k] = [str(x).strip() for x in v if str(x).strip()]
+        elif isinstance(v, str) and v.strip():
+            fixed[k] = [v.strip()]
         else:
-            return output
-    except:
-        return output
+            fixed[k] = []
+    return fixed
 
-# === Step 4: Apply with progress bar ===
-tqdm.pandas()
-df["microsoft/phi-2"] = df["context"].progress_apply(extract_info)
+def merge_jsons(json_list):
+    """Merge a list of schema-conformant dicts, de-duplicating while preserving order."""
+    merged = empty_skeleton()
+    for js in json_list:
+        js = ensure_schema(js)
+        for key in SKELETON_KEYS:
+            for item in js[key]:
+                # dedupe with order preservation
+                if item not in merged[key]:
+                    merged[key].append(item)
+    return merged
 
-# === Step 5: Save file ===
+def find_and_parse_json(text):
+    """Extract the outermost JSON object from text and parse it."""
+    try:
+        start = text.find("{")
+        end   = text.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            return json.loads(text[start:end+1])
+    except Exception:
+        pass
+    return None
+
+def chunk_text(s, size=chunk_chars, ov=overlap):
+    if not isinstance(s, str): 
+        return []
+    s = s.strip()
+    if len(s) <= size:
+        return [s] if s else []
+    chunks = []
+    i = 0
+    while i < len(s):
+        chunk = s[i:i+size]
+        chunks.append(chunk)
+        i += max(size - ov, 1)
+    return chunks
+
+# ---- Prompt builder (keeps explanatory text INSIDE the JSON strings) ----
+def build_prompt(text):
+    return (
+        "Extract the following sections from the medical note and return them as a single JSON object. "
+        "Each field must be an array of strings. Each string may include a concise, human-readable explanation "
+        "with the extracted detail (e.g., include brief context like 'Impressions:' or short qualifiers). "
+        "If a section is not present, return an empty array for that section.\n\n"
+        "Required JSON shape:\n"
+        '{ "Visit Reason": [], '
+        '"Diagnosis": [], '
+        '"Past Medical History": [], '
+        '"Clinical Details": [], '
+        '"Vital Signs": [], '
+        '"Exam Results": [], '
+        '"Lab Results": [], '
+        '"Imaging Test Results": [], '
+        '"Hospital and ED course": [], '
+        '"Discharge Plan": [], '
+        '"Full HPI": [], '
+        '"Full Assessment and Plan": [] }\n\n'
+        "Medical note:\n"
+        f"{text}\n\n"
+        "Return only the JSON object now:"
+    )
+
+def extract_from_chunk(text):
+    prompt = build_prompt(text)
+    out = generator(prompt, max_new_tokens=max_new_tok)[0]["generated_text"]
+    parsed = find_and_parse_json(out)
+    return ensure_schema(parsed) if parsed else empty_skeleton()
+
+def extract_info_large(text):
+    if not isinstance(text, str) or not text.strip():
+        return json.dumps(empty_skeleton(), ensure_ascii=False)
+
+    # Split into overlapping chunks, extract each, then merge
+    chunks = chunk_text(text, size=chunk_chars, ov=overlap)
+    if not chunks:
+        return json.dumps(empty_skeleton(), ensure_ascii=False)
+
+    partials = []
+    for ch in chunks:
+        js = extract_from_chunk(ch)
+        partials.append(js)
+
+    merged = merge_jsons(partials)
+    return json.dumps(merged, ensure_ascii=False)
+
+# ---- Apply with progress bar and save back to SAME file ----
+tqdm.pandas(desc="Extracting JSON with explanations (chunked)")
+df[model_name] = df[source_col].progress_apply(extract_info_large)
+
 df.to_csv(file_path, index=False)
-print(f"Processing complete. Updated file saved: {file_path}")
+print(f"✅ Processing complete. Updated file saved: {file_path}")
