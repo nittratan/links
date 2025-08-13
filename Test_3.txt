@@ -1,0 +1,69 @@
+import pandas as pd
+import json
+from transformers import pipeline
+from tqdm import tqdm
+
+# === Step 1: Load CSV ===
+file_path = "results.csv"  # change to your file name
+df = pd.read_csv(file_path)
+
+# === Step 2: Load Phi-2 ===
+generator = pipeline(
+    "text-generation",
+    model="microsoft/phi-2",
+    torch_dtype="auto",
+    device_map="auto",
+    do_sample=False
+)
+
+# === Step 3: Function to extract info ===
+def extract_info(text):
+    example_json = '''{
+"Visit Reason": ["Routine checkup"],
+"Diagnosis": ["Impressions: Acute on chronic pharyngeal dysphagia..."],
+"Past Medical History": ["Patient endorsing preferring softer solids..."],
+"Clinical Details": ["Oral Phase: No gross oral phase deficits", "Pharyngeal Phase: No gross pharyngeal phase deficits", "Swallowing: <Level 4> Mild-moderate dysphagia..."],
+"Vital Signs": [],
+"Exam Results": ["Oral-Peripheral Examination General: Non-focal/unremarkable", "Lips: Unremarkable/WNL", "Tongue: Unremarkable/WNL", "Larynx: Unremarkable/WNL", "Oral status: Scattered/missing teeth"],
+"Lab Results": [],
+"Imaging Test Results": [],
+"Hospital and ED course": ["OK to continue w/ oral diet pending instrumental given pt aware of difficulties..."],
+"Discharge Plan": [],
+"Full HPI": [],
+"Full Assessment and Plan": ["Recommending regular diet/thin liquids..."]
+}'''
+
+    prompt = f"""
+You are an assistant that extracts structured medical information in JSON format.
+Follow this example output strictly:
+
+Example:
+{example_json}
+
+Now extract from the following text. Only return valid JSON, no extra words.
+
+Text:
+{text}
+JSON:
+"""
+
+    output = generator(prompt, max_new_tokens=700)[0]['generated_text']
+
+    try:
+        json_start = output.find("{")
+        json_end = output.rfind("}") + 1
+        if json_start != -1 and json_end != -1:
+            parsed = json.loads(output[json_start:json_end])
+            return json.dumps(parsed, ensure_ascii=False)
+        else:
+            return output
+    except:
+        return output
+
+# === Step 4: Apply with progress bar ===
+tqdm.pandas()
+df["microsoft/phi-2"] = df["context"].progress_apply(extract_info)
+
+# === Step 5: Save file ===
+df.to_csv(file_path, index=False)
+print(f"Processing complete. Updated file saved: {file_path}")
