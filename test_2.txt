@@ -1,128 +1,93 @@
-Thik hai bhai, main tumhare liye clear aur professional style unit test documentation bana deta hoon jo tum apne work log ya Confluence/Jira me dal sakte ho.
-
-
----
-
-Unit Test Document – UPD ACK Sending to EXL
-
-Objective
-
-To validate that when the UPD ACK is successfully sent to EXL, the ed-api is immediately triggered in a subprocess, and when the UPD ACK is not sent, the ed-api trigger does not occur.
-
-
----
-
-Test Scope
-
-System Under Test (SUT): API Endpoint https://t.gcpdns.internal.das/taggin
-
-Trigger Type: Manual/Automated via API call
-
-Dependent Service: ed-api
-
-Log Monitoring: Application logs
-
-
-
----
-
-Test Steps
-
-1. Trigger the API
-
-Send a request to:
-
-POST https://t.gcpdns.internal.das/taggin
-
-Provide necessary payload & headers as per API specification.
-
-
-
-2. Check UPD ACK Sending
-
-Open application logs in the respective logging tool (e.g., Kibana/Stackdriver).
-
-Search for log entry confirming UPD ACK sent to EXL.
-
-
-
-3. Verify ed-api Trigger (Positive Case)
-
-If UPD ACK sent is confirmed:
-
-Check logs for immediate subprocess call to ed-api.
-
-Match the correlation ID / request ID with the initial trigger.
-
-
-
-
-4. Verify No ed-api Trigger (Negative Case)
-
-If UPD ACK is not sent:
-
-Ensure no subprocess trigger for ed-api exists for the same correlation ID.
-
-
-
-
-
-
----
-
-Expected Results
-
-Case	UPD ACK Sent?	ed-api Trigger?	Expected Outcome
-
-Positive	Yes	Yes	ed-api triggered immediately
-Negative	No	No	No ed-api trigger
-
-
-
----
-
-Pass/Fail Criteria
-
-Pass: Behavior matches the expected results in both positive and negative cases.
-
-Fail: ed-api triggers without UPD ACK sent OR UPD ACK sent but no ed-api trigger occurs.
-
-
-
----
-
-Test Evidence
-
-Positive Case:
-
-Screenshot of log showing UPD ACK sent.
-
-Screenshot of log showing immediate ed-api subprocess trigger.
-
-
-Negative Case:
-
-Screenshot showing UPD ACK not sent.
-
-Screenshot showing absence of any ed-api subprocess trigger.
-
-
-
-
----
-
-Remarks
-
-Ensure both test cases are executed on the same environment.
-
-Maintain correlation ID mapping for traceability.
-
-Attach log screenshots as evidence.
-
-
-
----
-
-Bhai agar tum bolo to main iska ready-made Jira ticket format me bhi likh ke de sakta hoon taaki tum sidha copy-paste kar sako.
-Isme test case IDs aur evidence placeholders bhi dal dunga.
-
+import pandas as pd
+import json
+from transformers import pipeline
+from tqdm import tqdm
+
+# === Step 1: Load CSV ===
+file_path = "results.csv"  # change if needed
+df = pd.read_csv(file_path)
+
+# === Step 2: Load Gemma 2 9B Instruct model ===
+generator = pipeline(
+    "text-generation",
+    model="google/gemma-2-9b-it",
+    torch_dtype="auto",
+    device_map="auto",
+    do_sample=False
+)
+
+# === Helper: Merge extracted JSONs ===
+def merge_jsons(json_list):
+    merged = {
+        "Visit Reason": [],
+        "Diagnosis": [],
+        "Past Medical History": [],
+        "Clinical Details": [],
+        "Vital Signs": [],
+        "Exam Results": [],
+        "Lab Results": [],
+        "Imaging Test Results": [],
+        "Hospital and ED course": [],
+        "Discharge Plan": [],
+        "Full HPI": [],
+        "Full Assessment and Plan": []
+    }
+    for js in json_list:
+        for key in merged:
+            if key in js and isinstance(js[key], list):
+                merged[key].extend(js[key])
+    for key in merged:
+        seen = set()
+        merged[key] = [x for x in merged[key] if not (x in seen or seen.add(x))]
+    return merged
+
+# === Helper: Extract info from one chunk ===
+def extract_from_chunk(text):
+    prompt = (
+        "From the following medical text, extract the following sections and present them as JSON.\n"
+        "Each section should be an array of strings, and each string should contain the extracted information "
+        "along with a brief explanation in natural language where needed.\n\n"
+        '{ "Visit Reason": [], '
+        '"Diagnosis": [], '
+        '"Past Medical History": [], '
+        '"Clinical Details": [], '
+        '"Vital Signs": [], '
+        '"Exam Results": [], '
+        '"Lab Results": [], '
+        '"Imaging Test Results": [], '
+        '"Hospital and ED course": [], '
+        '"Discharge Plan": [], '
+        '"Full HPI": [], '
+        '"Full Assessment and Plan": [] }\n\n'
+        f"Text: {text}\n"
+        "Return the JSON now:"
+    )
+    output = generator(prompt, max_new_tokens=800)[0]['generated_text']
+
+    try:
+        json_start = output.find("{")
+        json_end = output.rfind("}") + 1
+        if json_start != -1 and json_end != -1:
+            return json.loads(output[json_start:json_end])
+    except:
+        pass
+    return {}
+
+# === Step 3: Main extraction function with chunking ===
+def extract_info_large(text, chunk_size=1500):
+    chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+    results = []
+    for chunk in chunks:
+        js = extract_from_chunk(chunk)
+        if js:
+            results.append(js)
+    merged = merge_jsons(results)
+    return json.dumps(merged, ensure_ascii=False)
+
+# === Step 4: Apply with progress bar ===
+tqdm.pandas(desc="Processing rows (with chunking)")
+df["google/gemma-2-9b-it"] = df["context"].progress_apply(extract_info_large)
+
+# === Step 5: Save updated CSV ===
+df.to_csv(file_path, index=False)
+print(f"Processing complete. Updated file saved: {file_path}")
