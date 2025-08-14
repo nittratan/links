@@ -1,62 +1,98 @@
- import pandas as pd
+import pandas as pd
 import re
-from transformers import pipeline
+from sentence_transformers import SentenceTransformer, util
+import numpy as np
 
-# Load CSV
+# === Load CSV ===
 df = pd.read_csv("results.csv")
 
-# Categories we want to extract
-CATEGORIES = [
-    "Visit Reason",
-    "Diagnosis",
-    "Past Medical History",
-    "Clinical Details",
-    "Vital Signs",
-    "Exam Results",
-    "Lab Results",
-    "Imaging Test Results",
-    "Hospital and ED course",
-    "Discharge Plan",
-    "Full HPI",
-    "Full Assessment and Plan"
-]
+# === Categories & aliases ===
+CATEGORY_ALIASES = {
+    "Visit Reason": ["Visit Reason", "Reason for Visit", "Chief Complaint"],
+    "Diagnosis": ["Diagnosis", "Final Diagnosis", "Provisional Diagnosis"],
+    "Past Medical History": ["Past Medical History", "PMH", "History of Illness"],
+    "Clinical Details": ["Clinical Details", "Clinical Notes", "Case Details"],
+    "Vital Signs": ["Vital Signs", "Vitals", "Patient Vitals"],
+    "Exam Results": ["Exam Results", "Physical Examination", "Exam Findings"],
+    "Lab Results": ["Lab Results", "Laboratory Findings", "Labs"],
+    "Imaging Test Results": ["Imaging Test Results", "Radiology", "Imaging Results"],
+    "Hospital and ED course": ["Hospital and ED course", "ED Course", "Hospital Course"],
+    "Discharge Plan": ["Discharge Plan", "Plan at Discharge", "Discharge Instructions"],
+    "Full HPI": ["Full HPI", "History of Present Illness", "HPI"],
+    "Full Assessment and Plan": ["Full Assessment and Plan", "Assessment and Plan", "Plan"]
+}
 
-# Initialize zero-shot classification model for category guessing
-classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+CATEGORIES = list(CATEGORY_ALIASES.keys())
 
-def extract_info(text):
-    # Ensure string and remove extra spaces
+# === Load embedding model ===
+embedder = SentenceTransformer("all-MiniLM-L6-v2")
+
+def extract_with_best_similarity(text, threshold=0.65, top_k=3):
+    """
+    Extract info for each category with heading match (fuzzy via aliases) 
+    and fallback to top-N cosine similarity matches.
+    """
     text = str(text).strip()
-    
-    # Default empty output for all categories
     result = {cat: [] for cat in CATEGORIES}
+    similarity_scores = {cat: 0.0 for cat in CATEGORIES}
     
-    # Step 1: Regex-based extraction (when headings exist)
-    for cat in CATEGORIES:
-        pattern = rf"(?i){cat}\s*[:\-]\s*(.*?)(?=\n[A-Z][a-zA-Z ]*[:\-]|\Z)"
-        match = re.search(pattern, text, re.S)
-        if match:
-            value = match.group(1).strip()
-            if value:
-                result[cat] = [v.strip() for v in value.split("\n") if v.strip()]
+    # === Heading-based extraction (fuzzy match via aliases) ===
+    for cat, aliases in CATEGORY_ALIASES.items():
+        found_match = False
+        for alias in aliases:
+            pattern = rf"(?i){re.escape(alias)}\s*[:\-]?\s*(.*?)(?=\n[A-Z].*[:\-]|\Z)"
+            match = re.search(pattern, text, re.S)
+            if match:
+                value = match.group(1).strip()
+                if value:
+                    # Keep multi-line content together
+                    extracted = [v.strip() for v in value.split("\n") if v.strip()]
+                    result[cat] = extracted
+                    similarity_scores[cat] = 1.0
+                    found_match = True
+                    break  # stop checking aliases if found
+        if found_match:
+            continue
     
-    # Step 2: If still empty, use model to guess category from context
-    for cat in CATEGORIES:
-        if not result[cat]:  # if no direct heading match
-            classification = classifier(text, CATEGORIES, multi_label=True)
-            # If the model thinks this category is relevant, extract potential sentences
-            if cat in classification["labels"][:3]:  # top 3 matches
-                sentences = [s.strip() for s in re.split(r'[.\n]', text) if s.strip()]
-                guessed = [s for s in sentences if re.search(cat.split()[0], s, re.I)]
-                result[cat] = guessed if guessed else []
+    # === Fallback: cosine similarity (top-N sentences) ===
+    paragraphs = [p.strip() for p in text.split("\n") if p.strip()]  # preserve context
+    if paragraphs:
+        para_embeddings = embedder.encode(paragraphs, convert_to_tensor=True)
+        
+        for cat in CATEGORIES:
+            if not result[cat]:  # no heading match
+                cat_embedding = embedder.encode(cat, convert_to_tensor=True)
+                cosine_scores = util.cos_sim(cat_embedding, para_embeddings)[0]
+                
+                # Get top-N relevant paragraphs above threshold
+                top_indices = np.argsort(cosine_scores.cpu().numpy())[::-1][:top_k]
+                top_matches = [
+                    paragraphs[idx] for idx in top_indices 
+                    if cosine_scores[idx] >= threshold
+                ]
+                
+                if top_matches:
+                    result[cat] = top_matches
+                    similarity_scores[cat] = float(max(cosine_scores[idx] for idx in top_indices))
     
-    return result
+    return result, similarity_scores
 
-# Apply extraction to each record and save under the model name as column
-MODEL_NAME = "distilbert-base-uncased"  # Example model name
-df[MODEL_NAME] = df["context"].apply(lambda x: extract_info(x))
+# === Apply extraction ===
+MODEL_NAME = "distilbert-base-uncased"
+df_results = []
+df_scores = []
+avg_scores = []
 
-# Save updated CSV
-df.to_csv("results_with_extraction.csv", index=False)
+for context_text in df["context"]:
+    extracted, scores = extract_with_best_similarity(context_text)
+    df_results.append(extracted)
+    df_scores.append(scores)
+    avg_scores.append(np.mean(list(scores.values())) if scores else 0.0)
 
-print("✅ Extraction completed. Results saved to results_with_extraction.csv")
+df[MODEL_NAME] = df_results
+df["cosine_similarity_scores"] = df_scores
+df["average_cosine_similarity"] = avg_scores
+
+# === Save ===
+df.to_csv("results_with_best_cosine_similarity.csv", index=False)
+print("✅ Improved extraction + cosine similarity completed and saved.")
