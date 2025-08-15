@@ -1,98 +1,90 @@
 import pandas as pd
-import re
-from sentence_transformers import SentenceTransformer, util
-import numpy as np
+import json
+from transformers import pipeline
+from tqdm import tqdm
 
-# === Load CSV ===
-df = pd.read_csv("results.csv")
+# === Step 1: Load CSV ===
+file_path = "results.csv"  # change to your file name
+df = pd.read_csv(file_path)
 
-# === Categories & aliases ===
-CATEGORY_ALIASES = {
-    "Visit Reason": ["Visit Reason", "Reason for Visit", "Chief Complaint"],
-    "Diagnosis": ["Diagnosis", "Final Diagnosis", "Provisional Diagnosis"],
-    "Past Medical History": ["Past Medical History", "PMH", "History of Illness"],
-    "Clinical Details": ["Clinical Details", "Clinical Notes", "Case Details"],
-    "Vital Signs": ["Vital Signs", "Vitals", "Patient Vitals"],
-    "Exam Results": ["Exam Results", "Physical Examination", "Exam Findings"],
-    "Lab Results": ["Lab Results", "Laboratory Findings", "Labs"],
-    "Imaging Test Results": ["Imaging Test Results", "Radiology", "Imaging Results"],
-    "Hospital and ED course": ["Hospital and ED course", "ED Course", "Hospital Course"],
-    "Discharge Plan": ["Discharge Plan", "Plan at Discharge", "Discharge Instructions"],
-    "Full HPI": ["Full HPI", "History of Present Illness", "HPI"],
-    "Full Assessment and Plan": ["Full Assessment and Plan", "Assessment and Plan", "Plan"]
-}
+# === Step 2: Load instruction-tuned Falcon model ===
+generator = pipeline(
+    "text-generation",
+    model="tiiuae/falcon-7b-instruct",
+    torch_dtype="auto",
+    device_map="auto",
+    do_sample=False
+)
 
-CATEGORIES = list(CATEGORY_ALIASES.keys())
+# === Step 3: Function to extract structured info ===
+def extract_info(text):
+    if not isinstance(text, str):
+        return "{}"
 
-# === Load embedding model ===
-embedder = SentenceTransformer("all-MiniLM-L6-v2")
+    max_chars = 1500  # limit context size
+    if len(text) > max_chars:
+        text = text[:max_chars]
 
-def extract_with_best_similarity(text, threshold=0.65, top_k=3):
-    """
-    Extract info for each category with heading match (fuzzy via aliases) 
-    and fallback to top-N cosine similarity matches.
-    """
-    text = str(text).strip()
-    result = {cat: [] for cat in CATEGORIES}
-    similarity_scores = {cat: 0.0 for cat in CATEGORIES}
-    
-    # === Heading-based extraction (fuzzy match via aliases) ===
-    for cat, aliases in CATEGORY_ALIASES.items():
-        found_match = False
-        for alias in aliases:
-            pattern = rf"(?i){re.escape(alias)}\s*[:\-]?\s*(.*?)(?=\n[A-Z].*[:\-]|\Z)"
-            match = re.search(pattern, text, re.S)
-            if match:
-                value = match.group(1).strip()
-                if value:
-                    # Keep multi-line content together
-                    extracted = [v.strip() for v in value.split("\n") if v.strip()]
-                    result[cat] = extracted
-                    similarity_scores[cat] = 1.0
-                    found_match = True
-                    break  # stop checking aliases if found
-        if found_match:
-            continue
-    
-    # === Fallback: cosine similarity (top-N sentences) ===
-    paragraphs = [p.strip() for p in text.split("\n") if p.strip()]  # preserve context
-    if paragraphs:
-        para_embeddings = embedder.encode(paragraphs, convert_to_tensor=True)
-        
-        for cat in CATEGORIES:
-            if not result[cat]:  # no heading match
-                cat_embedding = embedder.encode(cat, convert_to_tensor=True)
-                cosine_scores = util.cos_sim(cat_embedding, para_embeddings)[0]
-                
-                # Get top-N relevant paragraphs above threshold
-                top_indices = np.argsort(cosine_scores.cpu().numpy())[::-1][:top_k]
-                top_matches = [
-                    paragraphs[idx] for idx in top_indices 
-                    if cosine_scores[idx] >= threshold
-                ]
-                
-                if top_matches:
-                    result[cat] = top_matches
-                    similarity_scores[cat] = float(max(cosine_scores[idx] for idx in top_indices))
-    
-    return result, similarity_scores
+    prompt = f"""
+From the following medical text, extract the following information and return in JSON format.
+Include short explanations inside each array entry.
 
-# === Apply extraction ===
-MODEL_NAME = "distilbert-base-uncased"
-df_results = []
-df_scores = []
-avg_scores = []
+Definitions of fields:
+Visit Reason: The main complaint or reason the patient is seeking care.
+Diagnosis: The doctor's conclusion about the patient's condition.
+Past Medical History: Previous illnesses, surgeries, or conditions.
+Clinical Details: Summary of the patient's symptoms, history, and physical findings.
+Vital Signs: Measurements like blood pressure, heart rate, temperature.
+Exam Results: Findings from physical examinations.
+Lab Results: Results of laboratory tests (blood, urine, etc.).
+Imaging Test Results: Findings from X-ray, MRI, CT, etc.
+Hospital and ED course: Summary of treatment during hospital or ER stay.
+Discharge Plan: Instructions given when patient leaves care.
+Full HPI: Detailed history of present illness.
+Full Assessment and Plan: Complete doctor’s assessment and planned treatment.
 
-for context_text in df["context"]:
-    extracted, scores = extract_with_best_similarity(context_text)
-    df_results.append(extracted)
-    df_scores.append(scores)
-    avg_scores.append(np.mean(list(scores.values())) if scores else 0.0)
+Text:
+{text}
 
-df[MODEL_NAME] = df_results
-df["cosine_similarity_scores"] = df_scores
-df["average_cosine_similarity"] = avg_scores
+Return JSON in this structure:
+{{
+  "Visit Reason": [],
+  "Diagnosis": [],
+  "Past Medical History": [],
+  "Clinical Details": [],
+  "Vital Signs": [],
+  "Exam Results": [],
+  "Lab Results": [],
+  "Imaging Test Results": [],
+  "Hospital and ED course": [],
+  "Discharge Plan": [],
+  "Full HPI": [],
+  "Full Assessment and Plan": []
+}}
+"""
 
-# === Save ===
-df.to_csv("results_with_best_cosine_similarity.csv", index=False)
-print("✅ Improved extraction + cosine similarity completed and saved.")
+    try:
+        result = generator(prompt, max_new_tokens=500)
+        if not result or "generated_text" not in result[0]:
+            return "{}"
+
+        output = result[0]["generated_text"]
+
+        # Extract JSON part only
+        json_start = output.find("{")
+        json_end = output.rfind("}") + 1
+        if json_start != -1 and json_end != -1:
+            parsed = json.loads(output[json_start:json_end])
+            return json.dumps(parsed, ensure_ascii=False)
+        else:
+            return output
+    except Exception as e:
+        return f"ERROR: {str(e)}"
+
+# === Step 4: Apply with progress bar ===
+tqdm.pandas(desc="Processing rows")
+df["falcon_output"] = df["context"].progress_apply(extract_info)
+
+# === Step 5: Save updated CSV ===
+df.to_csv(file_path, index=False)
+print(f"Processing complete. Updated file saved: {file_path}")
