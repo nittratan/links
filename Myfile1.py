@@ -1,33 +1,19 @@
-from transformers import DonutProcessor, VisionEncoderDecoderModel
-from PIL import Image
-
-def extract_text_with_nvlm(image_path):
-    """
-    Extract text from an image using NVIDIA's Donut NVLM model.
-    
-    Args:
-        image_path (str): Path to the input image.
-    
-    Returns:
-        str: Extracted text.
-    """
-    # Load NVIDIA's Donut processor and model
-    processor = DonutProcessor.from_pretrained("nvidia/donut-base")
-    model = VisionEncoderDecoderModel.from_pretrained("nvidia/donut-base")
-    
-    # Open and preprocess the image
-    image = Image.open(image_path).convert("RGB")
-    pixel_values = processor(image, return_tensors="pt").pixel_values
-    
-    # Generate text
-    outputs = model.generate(pixel_values)
-    text = processor.batch_decode(outputs, skip_special_tokens=True)[0]
-    
-    return text
+Thik hai bhai, ek short aur professional email draft niche de raha hu 👇
 
 
-# Example usage
-if __name__ == "__main__":
-    image_path = "path/to/your/image.jpg"
-    text = extract_text_with_nvlm(image_path)
-    print("Extracted Text:", text)
+---
+
+Subject: CPU Utilization Alert – Current Status
+
+Hi [TL’s Name],
+
+We received a high CPU utilization alert earlier. I have checked the GCP monitoring graphs, and the spike was momentary. Currently, all deployments are stable, and CPU, memory, and disk usage are normal.
+
+Thanks,
+[Your Name]
+
+
+---
+
+Bhai chaho to mai ek thoda detailed version bhi bana du jisme graph ka reference aur “no action required at this point” mention ho?
+
