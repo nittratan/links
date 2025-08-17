@@ -1,19 +1,8 @@
-Thik hai bhai, ek short aur professional email draft niche de raha hu 👇
+Hi Team,
 
+We use AWS instances for PostgreSQL data storage and GCP for application deployments. We have redeployed from our side, and currently all services are running fine. CPU utilization and overall system health are normal at this point.
 
----
-
-Subject: CPU Utilization Alert – Current Status
-
-Hi [TL’s Name],
-
-We received a high CPU utilization alert earlier. I have checked the GCP monitoring graphs, and the spike was momentary. Currently, all deployments are stable, and CPU, memory, and disk usage are normal.
+We will continue to monitor the services.
 
 Thanks,
-[Your Name]
-
-
----
-
-Bhai chaho to mai ek thoda detailed version bhi bana du jisme graph ka reference aur “no action required at this point” mention ho?
-
+Ramratan
