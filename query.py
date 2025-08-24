@@ -1,12 +1,13 @@
 if filter_obj:
     for key, value in filter_obj.items():
-        if value is None:  # handle IS NULL
+        if value is None:  # IS NULL
             stmt = stmt.where(getattr(table.c, key).is_(None))
         elif isinstance(value, list):
-            if value:  # skip empty list
+            if value:
                 stmt = stmt.where(getattr(table.c, key).in_(value))
         else:
-            stmt = stmt.where(getattr(table.c, key) == value)
+            stmt = stmt.where(getattr(table.c, key) == bindparam(key, value))
+
 
 
 
