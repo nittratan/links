@@ -1,18 +1,16 @@
-from sqlalchemy import bindparam
+git commit -m "fix(find_data): correct neg_filter_obj handling for IS NOT NULL, NOT IN, and != conditions
 
-if neg_filter_obj:
-    for key, value in neg_filter_obj.items():
-        col = getattr(table.c, key)
+Previously, neg_filter_obj with None generated invalid SQL (col != NULL).
+Now:
+- None → col IS NOT NULL
+- list/tuple/set → col NOT IN (...)
+- scalar values → col != :param (safe bindparam)
 
-        if value is None:  
-            # IS NOT NULL
-            stmt = stmt.where(col.is_not(None))
+Example:
+  filter_obj = {'is_tagged': False}
+  neg_filter_obj = {'clnt_audt_id': None}
 
-        elif isinstance(value, (list, tuple, set)):
-            vals = list(value)
-            if vals:  # skip empty list
-                stmt = stmt.where(col.notin_(vals))
-
-        else:
-            # safe "!=" with bindparam to avoid bool type error
-            stmt = stmt.where(col != bindparam(f"neg_{key}", value))
+Generates:
+  SELECT * FROM your_table
+  WHERE is_tagged = false AND clnt_audt_id IS NOT NULL;
+"
