@@ -1,22 +1,18 @@
-if filter_obj:
-    for key, value in filter_obj.items():
-        if value is None:  # IS NULL
-            stmt = stmt.where(getattr(table.c, key).is_(None))
-        elif isinstance(value, list):
-            if value:
-                stmt = stmt.where(getattr(table.c, key).in_(value))
-        else:
-            stmt = stmt.where(getattr(table.c, key) == bindparam(key, value))
-
-
-
+from sqlalchemy import bindparam
 
 if neg_filter_obj:
     for key, value in neg_filter_obj.items():
-        if value is None:  # handle IS NOT NULL
-            stmt = stmt.where(getattr(table.c, key).is_not(None))
-        elif isinstance(value, list):
-            if value:  # skip empty list
-                stmt = stmt.where(getattr(table.c, key).notin_(value))
+        col = getattr(table.c, key)
+
+        if value is None:  
+            # IS NOT NULL
+            stmt = stmt.where(col.is_not(None))
+
+        elif isinstance(value, (list, tuple, set)):
+            vals = list(value)
+            if vals:  # skip empty list
+                stmt = stmt.where(col.notin_(vals))
+
         else:
-            stmt = stmt.where(getattr(table.c, key) != value)
+            # safe "!=" with bindparam to avoid bool type error
+            stmt = stmt.where(col != bindparam(f"neg_{key}", value))
