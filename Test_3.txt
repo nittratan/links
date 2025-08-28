@@ -1,13 +1,1 @@
-def set_cert_payload(env: str, ccert_payload: dict, default_values: dict) -> dict:
-    """
-    Updates ccert_payload based on the environment and default values.
-    
-    Args:
-        env (str): Environment ("dev", "sit", "uat", "prod")
-        ccert_payload (dict): Payload dictionary to update
-        default_values (dict): Default values (CCERT_UPD_DEFAULT_VALUES)
-    """
 
-    
-
-    return ccert_payload
