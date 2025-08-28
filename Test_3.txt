@@ -1,90 +1,13 @@
-import pandas as pd
-import json
-from transformers import pipeline
-from tqdm import tqdm
+def set_cert_payload(env: str, ccert_payload: dict, default_values: dict) -> dict:
+    """
+    Updates ccert_payload based on the environment and default values.
+    
+    Args:
+        env (str): Environment ("dev", "sit", "uat", "prod")
+        ccert_payload (dict): Payload dictionary to update
+        default_values (dict): Default values (CCERT_UPD_DEFAULT_VALUES)
+    """
 
-# === Step 1: Load CSV ===
-file_path = "results.csv"  # change to your file name
-df = pd.read_csv(file_path)
+    
 
-# === Step 2: Load instruction-tuned Falcon model ===
-generator = pipeline(
-    "text-generation",
-    model="tiiuae/falcon-7b-instruct",
-    torch_dtype="auto",
-    device_map="auto",
-    do_sample=False
-)
-
-# === Step 3: Function to extract structured info ===
-def extract_info(text):
-    if not isinstance(text, str):
-        return "{}"
-
-    max_chars = 1500  # limit context size
-    if len(text) > max_chars:
-        text = text[:max_chars]
-
-    prompt = f"""
-From the following medical text, extract the following information and return in JSON format.
-Include short explanations inside each array entry.
-
-Definitions of fields:
-Visit Reason: The main complaint or reason the patient is seeking care.
-Diagnosis: The doctor's conclusion about the patient's condition.
-Past Medical History: Previous illnesses, surgeries, or conditions.
-Clinical Details: Summary of the patient's symptoms, history, and physical findings.
-Vital Signs: Measurements like blood pressure, heart rate, temperature.
-Exam Results: Findings from physical examinations.
-Lab Results: Results of laboratory tests (blood, urine, etc.).
-Imaging Test Results: Findings from X-ray, MRI, CT, etc.
-Hospital and ED course: Summary of treatment during hospital or ER stay.
-Discharge Plan: Instructions given when patient leaves care.
-Full HPI: Detailed history of present illness.
-Full Assessment and Plan: Complete doctor’s assessment and planned treatment.
-
-Text:
-{text}
-
-Return JSON in this structure:
-{{
-  "Visit Reason": [],
-  "Diagnosis": [],
-  "Past Medical History": [],
-  "Clinical Details": [],
-  "Vital Signs": [],
-  "Exam Results": [],
-  "Lab Results": [],
-  "Imaging Test Results": [],
-  "Hospital and ED course": [],
-  "Discharge Plan": [],
-  "Full HPI": [],
-  "Full Assessment and Plan": []
-}}
-"""
-
-    try:
-        result = generator(prompt, max_new_tokens=500)
-        if not result or "generated_text" not in result[0]:
-            return "{}"
-
-        output = result[0]["generated_text"]
-
-        # Extract JSON part only
-        json_start = output.find("{")
-        json_end = output.rfind("}") + 1
-        if json_start != -1 and json_end != -1:
-            parsed = json.loads(output[json_start:json_end])
-            return json.dumps(parsed, ensure_ascii=False)
-        else:
-            return output
-    except Exception as e:
-        return f"ERROR: {str(e)}"
-
-# === Step 4: Apply with progress bar ===
-tqdm.pandas(desc="Processing rows")
-df["falcon_output"] = df["context"].progress_apply(extract_info)
-
-# === Step 5: Save updated CSV ===
-df.to_csv(file_path, index=False)
-print(f"Processing complete. Updated file saved: {file_path}")
+    return ccert_payload
