@@ -1,38 +1,9 @@
-from fastapi import FastAPI, HTTPException
-import requests
-from PyPDF2 import PdfReader
-from io import BytesIO
+Daily Update (Oct 7, 2025):
 
-app = FastAPI()
+Demonstrated the XYZ Chatbot Translation document, explaining the end-to-end workflow, translation flow, and result interpretation process.
 
-# Example list of URLs
-policy_URL = [
-    "https://example.com/document1.pdf",
-    "https://example.com/document2.pdf"
-]
+Validated translation outputs across multiple cases to ensure linguistic accuracy, contextual correctness, and consistency with the original content.
 
-@app.get("/pdfs_from_urls/")
-async def read_pdfs_from_urls():
-    """Read PDFs from a static list of URLs and extract their text content."""
-    pdf_texts = []
+Developed and refined logic for creating new translation use cases aimed at improving chatbot adaptability and language coverage.
 
-    for url in policy_URL:
-        if not url.endswith(".pdf"):
-            raise HTTPException(status_code=400, detail=f"URL {url} does not point to a PDF file.")
-
-        # Read the PDF file from the URL
-        response = requests.get(url)
-        if response.status_code != 200:
-            raise HTTPException(status_code=400, detail=f"Failed to download PDF from {url}")
-
-        try:
-            # Read the PDF content
-            pdf = PdfReader(BytesIO(response.content))
-            text = ""
-            for page in pdf.pages:
-                text += page.extract_text()
-            pdf_texts.append(text)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error processing PDF from {url}: {str(e)}")
-
-    return {"message": "PDFs processed successfully!", "pdf_texts": pdf_texts}
+Reviewed and analyzed all 14 use cases from the Non-West Mixers file to understand current implementation gaps and identify areas for enhancement in translation quality and response behavior.
