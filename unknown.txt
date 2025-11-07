@@ -1,2 +1,2 @@
-hello world 
-"The development part of the story is done. I did partial testing with the data I have, but for complete verification I need exact test data which is currently not available. Once we get the required dataset, I’ll finish the remaining testing."
+Developed and deployed an API endpoint to trigger batch jobs on-demand, automating the earlier cron-based process. This enhancement provided flexibility to QA teams for test execution, reducing dependency on scheduled triggers and significantly improving productivity and operational efficiency. Successfully implemented the job-trigger automation module, enabling on-demand testing workflows and smoother QA operations.
+Optimized multiple SQL queries by restructuring joins and indexes, leading to faster execution time and improved system performance during batch processing and data retrieval. These optimizations reduced database load and enhanced overall system responsiveness and stability.
