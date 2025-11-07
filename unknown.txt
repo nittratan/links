@@ -1,13 +1,1 @@
-Demonstrates strong collaboration and teamwork, effectively coordinating with cross-functional teams (Dev, QA, ABC team) to achieve project goals.
-
-Maintains proactive communication, sharing blockers, updates, and dependencies clearly to ensure smooth workflow and prevent delays.
-
-Shows adaptability and flexibility, quickly adjusting to production hotfixes, release changes, and evolving project requirements.
-
-Exhibits ownership and accountability, taking responsibility for tasks, ensuring completion with quality, and proactively addressing issues.
-
-Demonstrates problem-solving and analytical thinking, identifying optimization opportunities (e.g., SQL, batch jobs) and implementing solutions to improve efficiency.
-
-Engages in knowledge sharing and mentoring, conducting KT sessions, documenting processes, and helping peers improve their technical and process skills.
-
-Maintains a professional and positive attitude, fostering a collaborative and supportive work environment while adhering to organizational standards.
+The employee has consistently delivered high-quality results across all assigned goals, demonstrating strong technical expertise and ownership. Key achievements include automation of batch job triggering (previously cron-based) with 65% performance improvement, seamless support for monthly releases and audit-type onboarding, and effective cross-team coordination. Additionally, the employee exhibits exemplary behavioral competencies, including collaboration, proactive communication, problem-solving, and knowledge sharing, contributing significantly to team efficiency and project success. These accomplishments collectively exceed expectations for both goals and behavioral performance.
