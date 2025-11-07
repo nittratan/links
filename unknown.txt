@@ -1,7 +1,13 @@
-Developed and deployed an on-demand API to trigger batch jobs, automating cron processes, and optimized SQL queries with proper indexing, resulting in 65% faster execution. Supported QA with Pytest/unit tests, contributed to design, development, release management, and hotfixes. Streamlined monthly release activities including audit-type onboarding and provided consistent release support, while coordinating with the ABC team for claims pipeline adjustments and cross-team bug fixes, ensuring smoother workflows and reduced manual intervention.
+Demonstrates strong collaboration and teamwork, effectively coordinating with cross-functional teams (Dev, QA, ABC team) to achieve project goals.
 
+Maintains proactive communication, sharing blockers, updates, and dependencies clearly to ensure smooth workflow and prevent delays.
 
-Followed SDLC and agile processes to ensure timely sprint deliveries, maintained clear documentation and code review standards, and effectively communicated blockers and dependencies, improving coordination across Dev, QA, and product teams.
+Shows adaptability and flexibility, quickly adjusting to production hotfixes, release changes, and evolving project requirements.
 
+Exhibits ownership and accountability, taking responsibility for tasks, ensuring completion with quality, and proactively addressing issues.
 
-Conducted KT sessions and shared best practices on automation, query optimization, and batch processing enhancements. Contributed to internal technical documentation, completed HYWO compliance and security trainings, and actively participated in technical enhancement discussions and knowledge-sharing forums to improve overall team capability.
+Demonstrates problem-solving and analytical thinking, identifying optimization opportunities (e.g., SQL, batch jobs) and implementing solutions to improve efficiency.
+
+Engages in knowledge sharing and mentoring, conducting KT sessions, documenting processes, and helping peers improve their technical and process skills.
+
+Maintains a professional and positive attitude, fostering a collaborative and supportive work environment while adhering to organizational standards.
