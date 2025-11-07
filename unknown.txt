@@ -1,8 +1,1 @@
-I want to grow into a role where I can contribute to end-to-end system design, large-scale data/AI pipelines, and high-impact engineering decisions. My key interest areas include:
-Building scalable backend and cloud-native systems
-Advancing skills in MLOps, including model deployment, monitoring, CI/CD for ML, and production RAG pipelines
-Deepening expertise in GenAI, LLM integration, model optimization, and enterprise AI use cases
-Designing production-ready data/feature pipelines for AI-driven products
-Leading technical initiatives, mentoring team members, and improving engineering processes
-Working on high-impact domains like payment integrity, claims intelligence, provider anomaly detection, and healthcare automation
-I want to take more ownership in architecture, AI/ML deployment strategy, and long-term technical direction.
+I aim to grow into a more advanced technical role within the next 0-1 years, with deeper responsibilities in system design, cloud architecture, MLOps, and GenAI integrations. I want to take more ownership in building scalable AI-driven solutions, leading technical initiatives, and contributing to long-term product and platform architecture.
