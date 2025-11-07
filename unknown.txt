@@ -1,6 +1,7 @@
-Actively contributed across all phases of project development — including design, development, testing, configuration, and release management — ensuring timely delivery of high-quality deliverables.
-Collaborated closely with QA teams by providing integration support, executing Pytest and unit test suites, and resolving identified defects to maintain product stability and test coverage.
-Implemented major performance improvements in the UPD batch job using multithreading and optimized SQL queries with proper indexing, resulting in a 65% reduction in execution time and enhanced system scalability.
-Provided consistent production and Level-0 (LO) support, handling on-demand issue triaging, and contributing to critical hotfix releases with minimal downtime.
-Maintained detailed technical documentation, ensuring traceability and clarity for future enhancements, while proactively addressing bugs and configuration issues to improve overall system reliability.
-Demonstrated strong cross-team collaboration by working closely with the ABC team to implement adjustments in the claims pipeline and perform time-to-time bug fixes. Ensured smooth coordination, faster issue resolution, and improved process alignment across teams, reducing dependency delays and enhancing delivery efficiency.
+Developed and deployed an on-demand API to trigger batch jobs, automating cron processes, and optimized SQL queries with proper indexing, resulting in 65% faster execution. Supported QA with Pytest/unit tests, contributed to design, development, release management, and hotfixes. Streamlined monthly release activities including audit-type onboarding and provided consistent release support, while coordinating with the ABC team for claims pipeline adjustments and cross-team bug fixes, ensuring smoother workflows and reduced manual intervention.
+
+
+Followed SDLC and agile processes to ensure timely sprint deliveries, maintained clear documentation and code review standards, and effectively communicated blockers and dependencies, improving coordination across Dev, QA, and product teams.
+
+
+Conducted KT sessions and shared best practices on automation, query optimization, and batch processing enhancements. Contributed to internal technical documentation, completed HYWO compliance and security trainings, and actively participated in technical enhancement discussions and knowledge-sharing forums to improve overall team capability.
