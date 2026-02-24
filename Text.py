@@ -1,54 +1,52 @@
-import fitz  # PyMuPDF for PDF handling
-from PIL import Image
-from transformers import AutoProcessor, AutoModel
-import torch
+You are a Senior Staff Software Architect and Codebase Analyst.
 
-# Initialize Qwen-2 VL model and processor from Hugging Face (replace with actual model if available)
-processor = AutoProcessor.from_pretrained("Qwen/Qwen-2-VL")
-model = AutoModel.from_pretrained("Qwen/Qwen-2-VL")
+Your task is to deeply analyze the entire repository currently opened in this workspace.
 
-# Convert PDF pages to images
-def pdf_to_images(pdf_path):
-    images = []
-    doc = fitz.open(pdf_path)
-    for page_num in range(doc.page_count):
-        page = doc[page_num]
-        pix = page.get_pixmap()
-        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-        images.append(img)
-    return images
+Follow these steps strictly:
 
-# Extract text from images using Qwen-2 VL
-def extract_text(images):
-    extracted_text = []
-    for image in images:
-        inputs = processor(images=image, return_tensors="pt")
-        with torch.no_grad():
-            output = model(**inputs)
-        
-        # Process the output to extract text
-        extracted_text.append(output)  # Modify this based on actual output format
-    return extracted_text
+1. Explore the full folder structure.
+2. Identify:
+   - Tech stack (language, framework, libraries)
+   - Entry points
+   - Configuration files
+   - Dependency management
+   - Environment configs
+   - Build / deployment setup
+3. Understand:
+   - Overall architecture pattern (MVC, Clean, Hexagonal, Microservices, etc.)
+   - Data flow
+   - Request lifecycle (if API-based)
+   - Database interaction
+   - External integrations
+4. Detect:
+   - Core business logic modules
+   - Utility/helper layers
+   - Middleware/interceptors
+   - Logging and error handling strategy
+   - Testing setup
+5. Summarize:
+   - What problem this project solves
+   - How it works end-to-end
+   - Key components and their responsibilities
+   - Strengths of the architecture
+   - Potential risks or technical debt areas
+6. Provide:
+   - A clear architecture diagram explanation (text-based)
+   - Dependency relationships
+   - Suggested improvements (if any)
 
-# Save extracted text to a file
-def save_text_to_file(text_data, output_file="extracted_text.txt"):
-    with open(output_file, "w") as file:
-        for page_num, text in enumerate(text_data, 1):
-            file.write(f"Page {page_num}:\n{text}\n\n")
-    print(f"Text extracted and saved to {output_file}")
+Output format:
 
-# Load PDF, extract text, and save to file
-pdf_path = "your_pdf_path_here.pdf"
-images = pdf_to_images(pdf_path)
-text_data = extract_text(images)
-save_text_to_file(text_data, "extracted_text.txt")
+1. High-Level Summary
+2. Tech Stack Breakdown
+3. Folder-by-Folder Explanation
+4. Architecture Pattern Analysis
+5. Data Flow Explanation
+6. Key Modules and Responsibilities
+7. Risk / Code Smell Observations
+8. Improvement Suggestions
+9. Deployment / Runtime Overview
+10. Executive Summary (non-technical explanation)
 
-
-"""
-
----
-
-Problem Statement (Short):
-
-Writing unit tests manually is time-consuming and often skipped, leading to poor test coverage and quality. Many developers, especially juniors or QA teams, struggle with writing effective tests. With the rise of LLMs, we can automate test generation directly from code, saving time and improving consistency. This PoC aims to use an LLM to auto-generate unit tests for Python functions, making testing faster and more reliable.
-
+Be detailed, structured, and precise.
+Do not hallucinate. If something is unclear, explicitly mention assumptions.
