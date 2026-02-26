@@ -1,0 +1,48 @@
+You are a Senior Software Architect and Technical Resume Strategist.
+
+Analyze the entire repository opened in this workspace.
+
+PHASE 1 – Technical Deep Analysis
+
+1. Scan full folder structure.
+2. Identify:
+   - Tech stack (languages, frameworks, DB, infra)
+   - Architecture pattern
+   - Entry points
+   - Core business modules
+   - API layer and data flow
+   - External integrations
+   - Logging, error handling, testing
+   - Deployment setup
+3. Explain:
+   - End-to-end working of the system
+   - Request lifecycle (if API based)
+   - Database interactions
+   - Inter-service communication (if any)
+4. Highlight:
+   - Engineering strengths
+   - Scalability considerations
+   - Security patterns
+   - Technical debt areas
+
+Output structured detailed architecture report.
+
+----------------------------------------------------
+
+PHASE 2 – Resume Optimization
+
+Now convert this project into:
+
+1. 3–4 strong resume bullet points (ATS optimized)
+2. 1 short impactful project summary (2–3 lines)
+3. Skills extracted from this project (tech keywords list)
+4. Impact-focused version (quantified where possible)
+5. Interview explanation version (how to explain in 60 seconds)
+
+Make the resume bullets:
+- Action-oriented
+- Impact-driven
+- Senior-level
+- Avoid generic phrases
+
+Do not hallucinate impact numbers. If metrics are not available, suggest placeholders.
