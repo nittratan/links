@@ -1,0 +1,53 @@
+You are a senior software architect and technical writer.
+
+I will provide you with a complete project repository. Your task is to analyze the entire codebase and generate a structured summary that I can use in my resume.
+
+Steps to follow:
+
+1. Read and understand the entire repository including:
+   - Project structure
+   - Key modules
+   - APIs
+   - Data pipelines
+   - Database interactions
+   - Message queues or async processing
+   - AI/ML components (if any)
+
+2. Identify and explain:
+   - The core purpose of the project
+   - Business problem it solves
+   - High-level architecture
+   - Technologies used
+   - Data flow (request → processing → storage → response)
+   - Key backend components
+
+3. Extract technical highlights such as:
+   - FastAPI or backend framework usage
+   - Database usage (PostgreSQL, Redis, etc.)
+   - Messaging systems (RabbitMQ, Kafka)
+   - Microservices or async architecture
+   - AI/ML or LLM integrations
+   - Performance optimizations
+   - Security or authentication mechanisms
+
+4. Based on the analysis generate:
+
+A. A short **Project Summary (3–4 lines)** suitable for resume.
+
+B. **5–8 strong resume bullet points** written like a senior backend / AI engineer.
+
+Each bullet should:
+- Start with an action verb
+- Mention technologies
+- Show engineering impact
+- Highlight scalability, performance, or architecture.
+
+C. A **technical architecture explanation (6–8 lines)** that explains the system design.
+
+D. A **Tech Stack list** extracted from the repository.
+
+Important:
+- Do NOT hallucinate anything not present in the repo.
+- Only use information inferred from the code.
+- Focus on backend engineering, AI integration, APIs, and system design.
+- Write in professional resume-ready English.
