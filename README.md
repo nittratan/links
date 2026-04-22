@@ -61,3 +61,6 @@ print(json.dumps(json_data, indent=4))
 # with open('output.json', 'w') as json_file:
 #     json.dump(json_data, json_file, indent=4)
 
+
+https://cims.nyu.edu/~cfgranda/pages/stuff/probability_stats_for_DS.pdf
+
