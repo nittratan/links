@@ -1,180 +1,49 @@
-You are a Senior Staff AI Engineer and System Design Expert.
+## 🚀 AI Buzzwords — April 2026
+As AI rapidly evolves, new concepts and terminologies are shaping how organizations build, deploy, and govern intelligent systems. Here are the key AI buzzwords defining April 2026:
 
-You have access to a production-level code repository of an AI-powered healthcare claims system (FastAPI + LLM + Rule Engine + Redis + DocumentDB).
-
-Your task is to analyze the entire repository and generate a complete, interview-ready explanation of the system.
-
----
-
-### 🎯 Output Requirements:
-
-Explain the system in a structured, clear, and senior-level manner as if I am explaining it in an AI Engineer interview.
+### 🔹 Agentic Workflows / Autonomous Agents  
+AI systems that go beyond chatbots by independently planning, making decisions, and executing end-to-end workflows. They can interact with tools, APIs, and data sources to complete complex tasks with minimal human intervention.
 
 ---
 
-## 1. High-Level Overview
-
-* What problem this system solves (business + technical)
-* Why this system is needed
+### 🔹 Physical AI  
+The integration of AI into physical systems such as robots, drones, and IoT devices. It enables real-world interaction, automation, and intelligent decision-making in environments like manufacturing, logistics, and smart infrastructure.
 
 ---
 
-## 2. End-to-End Architecture Flow
-
-* Start from entry point (API request)
-* Explain step-by-step flow till response
-* Include all major components:
-
-  * FastAPI
-  * Trigger/Orchestration layer
-  * Redis cache
-  * Data sources (Facets, EDP, Blue2, Digital APIs)
-  * Rule-based pipeline
-  * LLM pipeline
-  * DocumentDB
+### 🔹 Generative Engine Optimization (GEO)  
+An evolution of traditional SEO focused on optimizing content for AI-driven search and answer engines. It ensures content is discoverable, interpretable, and usable by generative AI systems.
 
 ---
 
-## 3. Detailed Component Breakdown
-
-### API Layer
-
-* How FastAPI is structured
-* Request validation (Pydantic)
-* Async handling
-
-### Orchestration Layer
-
-* trigger.py logic
-* Strategy Pattern (GBD vs CSBD)
-* Pipeline flow
-
-### Caching Layer (Redis)
-
-* What is cached
-* Cache key design
-* Cache hit/miss flow
-
-### Data Layer
-
-* External API integrations
-* Async calls
-* Data transformation into models
+### 🔹 Data Moat  
+A competitive advantage built through access to high-quality proprietary or private data. As public training data becomes saturated, organizations with unique datasets gain a significant edge in building better AI systems.
 
 ---
 
-## 4. Rule-Based System (VERY IMPORTANT)
-
-* How query mapping works (YAML → dictionary)
-* Exact match lookup logic
-* Field extraction process
-* Why rule-based is used (cost, latency, accuracy)
+### 🔹 Grounded AI / Grounding  
+Techniques that connect AI models to reliable external data sources (e.g., via RAG) to improve factual accuracy and reduce hallucinations. Grounding ensures outputs are context-aware and trustworthy.
 
 ---
 
-## 5. LLM Integration
-
-* When LLM is used
-* Prompt structure (system + context + query)
-* How context is selected (not full data)
-* Parameters used (temperature, tokens, etc.)
-* How hallucination is controlled
+### 🔹 Shadow AI  
+The use of unauthorized AI tools by employees within an organization. While it boosts individual productivity, it raises concerns around data privacy, security, and governance.
 
 ---
 
-## 6. Routing Logic (Critical)
-
-* How system decides:
-
-  * Rule-based vs LLM
-* Keyword filtering
-* Fallback logic
+### 🔹 ModelOps & AI Governance  
+Frameworks and practices for managing the lifecycle of AI models in production. This includes monitoring, versioning, compliance, risk management, and ensuring ethical and responsible AI usage.
 
 ---
 
-## 7. Data Flow (Step-by-Step)
-
-* From request → data fetch → processing → response
-* Include both:
-
-  * Rule-based flow
-  * LLM flow
+### 🔹 Multimodal AI  
+AI systems capable of understanding and generating multiple data types such as text, images, audio, and video. These systems enable richer and more natural human-computer interactions.
 
 ---
 
-## 8. Response Generation
+### 🔹 Slop  
+A colloquial term referring to low-quality, mass-produced AI-generated content. It highlights growing concerns around content authenticity, information overload, and declining signal-to-noise ratio on the internet.
 
-* How final response is structured
-* Follow-up question generation
-* Formatting logic
-
----
-
-## 9. Database & Storage
-
-* DocumentDB usage (logs, configs)
-* Redis usage
-* Data models
+These trends highlight a clear shift toward autonomous, reliable, and enterprise-ready AI systems that are deeply integrated into real-world workflows.
 
 ---
-
-## 10. Performance Optimization
-
-* Async calls
-* Caching
-* Avoiding unnecessary LLM calls
-
----
-
-## 11. Security & Compliance
-
-* PII masking
-* Encryption
-* Secrets management
-
----
-
-## 12. Design Patterns Used
-
-* Strategy Pattern
-* Template Method
-* Factory Pattern
-* Repository Pattern
-
-Explain where and why each is used.
-
----
-
-## 13. Trade-offs & Design Decisions
-
-* Why hybrid (rule + LLM)?
-* Why NoSQL?
-* Why not embeddings (if not used)?
-
----
-
-## 14. Limitations & Improvements
-
-* Current system limitations
-* What can be improved (vector DB, better routing, etc.)
-
----
-
-## 15. Interview Summary (IMPORTANT)
-
-* Give a 1-minute explanation
-* Give a 3-minute explanation
-* Give key "killer lines" to impress interviewer
-
----
-
-### ⚡ Important Instructions:
-
-* Keep explanation structured and clear
-* Avoid code-level details unless necessary
-* Focus on system design, reasoning, and trade-offs
-* Make it sound like a senior AI engineer explaining
-
----
-
-Now analyze the repository and generate the complete explanation.
