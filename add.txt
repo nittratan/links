@@ -1,2 +1,8 @@
 28.509354, 77.056154
 2057, Sector 23, Gurugram, Haryana 122017
+
+
+plot no - 3P
+Shree Krishna Apartments, G354+QPW, Sector 23, Gurugram, Haryana 122017
+28.5094964,77.0569
+28.5095663,77.0567879
